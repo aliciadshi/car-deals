@@ -4,7 +4,7 @@
 * Alicia Shi
 * Edwin Yue
 
-## Description
+## Project Description
 Buying a car can be daunting and require a lot of research beforehand, but Car Deals can help with that. It provides helpful insights for consumers looking to purchase a vehicle. It pulls details of car listings from [Auto.dev API](https://docs.auto.dev/v2), including price, make, model, year and location. 
 There will be two main interface windows. The first is a general browsing area to allow users to view and filter for cars. The second will provide analytical information such as value depreciation for certain models or price differences based on mileage.
 
@@ -24,3 +24,8 @@ There will be two main interface windows. The first is a general browsing area t
 * Storage Plan: All GET requests will be parsed and stored temporarily as a JSON. Only to immdiately be sent to the frontend to be consumed. It will not be stored long term.
 
 **Data Analysis and Visualization Plan** - Edwin Yue
+
+* To display the retrieved data, we plan on using the TKinter to create the GUI, with matplotlib as our library for graphing the metric we want to show to the user. Additionally, we can create more widets such as ttk.Treeview to create tables which showcase similar listings of the car you're working with.
+* Estimated depreciation will be shown through a bar graph, and Price vs Mileage will be shown through a scatter plot. Both of these graphs are chosen as they are relatively simple, and clearly reveal existing trends.
+* At the top, the header will consist of the name of the model, year, area, millege, and asking price.
+* Outside of the visualization for certain cars, there will be a search bar with filters, and a gallery view of posted listings.
