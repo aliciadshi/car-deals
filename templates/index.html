@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <header>
+        <h1>Car Deals</h1>
+        <p>Find useful insights for your next vehicle purchase.</p>
+    </header>
+
+    <main>
+        <form class="search-panel" action="/" method="get">
+            <input type="search" name="query" placeholder="Make or model">
+            <input type="number" name="max_price" placeholder="Max price" min="0">
+            <select name="sort">
+                <option value="price">Sort by price</option>
+                <option value="mileage">Sort by mileage</option>
+                <option value="year">Sort by year</option>
+            </select>
+            <button type="submit">Search cars</button>
+        </form>
+
+        <section class="empty-state">
+            <h2>Browse car listings</h2>
+            <p>Search results from Auto.dev will appear here.</p>
+        </section>
+    </main>
+</body>
+</html>
