@@ -24,25 +24,27 @@ app.mount(
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        "index.html",
-        {"request": request, "title": "Car Deals"},
+        request=request,
+        name="index.html",
+        context={"title": "Car Deals"},
     )
 
 
 @app.get("/browse", response_class=HTMLResponse)
 async def browse(request: Request):
     return templates.TemplateResponse(
-        "browse/browse.html",
-        {"request": request, "title": "Browse cars"},
+        request=request,
+        name="browse/browse.html",
+        context={"title": "Browse cars"},
     )
 
 
 @app.get("/detail", response_class=HTMLResponse)
 async def detail(request: Request):
     return templates.TemplateResponse(
-        "detail/detail.html",
-        {
-            "request": request,
+        request=request,
+        name="detail/detail.html",
+        context={
             "title": "2023 Subaru BRZ",
             "depreciation_chart": depreciation_chart(),
             "price_mileage_chart": price_mileage_chart(),
