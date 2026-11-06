@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Work+Sans:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/detail-static/detail.css">
+</head>
+<body>
+    <main class="detail">
+        <header class="car-header">
+            <div class="identity">
+                <a class="back" href="/browse">← Back to results</a>
+                <h1>2023 Subaru BRZ</h1>
+                <p class="subtitle">Used listing  ·  Coupe  ·  Cupertino, CA</p>
+            </div>
+            <div class="asking-price">
+                <p>ASKING PRICE</p>
+                <p class="price">$24,000</p>
+            </div>
+        </header>
+
+        <section class="summary" aria-label="Vehicle summary">
+            <div>
+                <p>YEAR</p>
+                <p class="summary-value">2023</p>
+            </div>
+            <div>
+                <p>MILEAGE</p>
+                <p class="summary-value">33,000 mi</p>
+            </div>
+            <div>
+                <p>LOCATION</p>
+                <p class="summary-value">Cupertino, CA</p>
+            </div>
+            <div>
+                <p>MAKE &amp; MODEL</p>
+                <p class="summary-value">Subaru BRZ</p>
+            </div>
+        </section>
+
+        <section class="charts">
+            <article class="chart">
+                <h2>Subaru BRZ estimated depreciation</h2>
+                <p class="chart-subtitle">Estimated BRZ resale value by vehicle age</p>
+                <img
+                    class="chart-image"
+                    src="{{ depreciation_chart }}"
+                    alt="Estimated resale value: MSRP $30k, then $2k less each year through 5 years."
+                >
+            </article>
+
+            <article class="chart">
+                <h2>Price vs. mileage</h2>
+                <p class="chart-subtitle">Comparable 2023 Subaru BRZ listings</p>
+                <img
+                    class="chart-image"
+                    src="{{ price_mileage_chart }}"
+                    alt="Price versus mileage for comparable BRZ listings. The selected car is $24k at 33,000 miles."
+                >
+            </article>
+        </section>
+
+        <section class="similar">
+            <div class="similar-heading">
+                <h2>Similar BRZ listings</h2>
+                <p id="listing-count">4 sample listings</p>
+            </div>
+            <div class="similar-columns" role="row">
+                <span>Year</span>
+                <span>Vehicle</span>
+                <span>Mileage</span>
+                <span>Price</span>
+                <span>Location</span>
+                <span>Compare</span>
+            </div>
+            <form id="compare-form">
+                <label class="similar-row">
+                    <span>2023</span>
+                    <span>Subaru BRZ</span>
+                    <span>35,200 mi</span>
+                    <span>$25,400</span>
+                    <span>Cupertino, CA</span>
+                    <span class="compare"><input type="checkbox" name="compare" aria-label="Compare 2023 Subaru BRZ, 35,200 miles, Cupertino"></span>
+                </label>
+                <label class="similar-row">
+                    <span>2023</span>
+                    <span>Subaru BRZ</span>
+                    <span>41,700 mi</span>
+                    <span>$23,500</span>
+                    <span>San Jose, CA</span>
+                    <span class="compare"><input type="checkbox" name="compare" aria-label="Compare 2023 Subaru BRZ, 41,700 miles, San Jose"></span>
+                </label>
+                <label class="similar-row">
+                    <span>2022</span>
+                    <span>Subaru BRZ</span>
+                    <span>29,800 mi</span>
+                    <span>$24,750</span>
+                    <span>Santa Clara, CA</span>
+                    <span class="compare"><input type="checkbox" name="compare" aria-label="Compare 2022 Subaru BRZ, 29,800 miles, Santa Clara"></span>
+                </label>
+                <label class="similar-row">
+                    <span>2022</span>
+                    <span>Subaru BRZ</span>
+                    <span>36,100 mi</span>
+                    <span>$22,900</span>
+                    <span>Oakland, CA</span>
+                    <span class="compare"><input type="checkbox" name="compare" aria-label="Compare 2022 Subaru BRZ, 36,100 miles, Oakland"></span>
+                </label>
+            </form>
+        </section>
+    </main>
+    <script src="/detail-static/detail.js" defer></script>
+</body>
+</html>
