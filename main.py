@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from charts import depreciation_chart, price_mileage_chart
-from client.api import get_car
+from client.api import get_car, get_similar_listings, search_listings
 
 
 app = FastAPI(title="Car Deals")
@@ -57,6 +57,34 @@ async def health_check():
     return {"status": "ok"}
 
 
+@app.get("/api/cars/{car_id}/similar")
+async def similar_cars(car_id: str):
+    car = await get_car(car_id)
+    similar_url = car.get("similar_listings_url")
+    if not similar_url:
+        return []
+    return await get_similar_listings(similar_url)
+
+
 @app.get("/api/cars/{car_id}")
 async def car_details(car_id: str):
     return await get_car(car_id)
+
+
+@app.get("/api/cars")
+async def search_cars(
+    make: str | None = None,
+    model: str | None = None,
+    max_price: int | None = None,
+    zip_code: str | None = None,
+    page: int = 1,
+    limit: int = 20,
+):
+    return await search_listings(
+        make=make,
+        model=model,
+        max_price=max_price,
+        zip_code=zip_code,
+        page=page,
+        limit=limit,
+    )
