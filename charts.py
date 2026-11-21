@@ -9,26 +9,12 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 
 
-MSRP = 30_000
 ANNUAL_DROP = 3_000
-VALUE_FLOOR = 10_000
-SELECTED_MILEAGE = 33_000
-SELECTED_PRICE = 24_000
-PRICE_AT_ZERO_MILES = 30_000
-DOLLARS_PER_MILE = 0.17
 
 
-def depreciation_values(years: int = 5) -> list[int]:
+def depreciation_values(msrp: int, years: int = 5) -> list[int]:
     """Resale value after each year, dropping a fixed amount from MSRP."""
-    return [MSRP - ANNUAL_DROP * year for year in range(years + 1)]
-
-
-def comparable_prices(mileages: list[int]) -> list[int]:
-    """Estimated asking price for a mileage, declining from a new-car price."""
-    return [
-        round(PRICE_AT_ZERO_MILES - DOLLARS_PER_MILE * mileage)
-        for mileage in mileages
-    ]
+    return [max(msrp - ANNUAL_DROP * year, 0) for year in range(years + 1)]
 
 
 def _money_tick(value: float, _position: int) -> str:
@@ -60,20 +46,13 @@ def _style(ax: plt.Axes) -> None:
     ax.tick_params(colors="#6b7280", labelsize=8, length=0)
 
 
-def depreciation_chart() -> str:
+def depreciation_chart(msrp: int) -> str:
     labels = ["MSRP", "1 yr", "2 yr", "3 yr", "4 yr", "5 yr"]
-    values = depreciation_values()
-    heights = [value - VALUE_FLOOR for value in values]
+    values = depreciation_values(msrp)
 
     fig, ax = plt.subplots(figsize=(5.56, 2.72), dpi=120)
-    bars = ax.bar(
-        labels,
-        heights,
-        bottom=VALUE_FLOOR,
-        color="#334155",
-        width=0.62,
-    )
-    ax.set_ylim(VALUE_FLOOR, 34_000)
+    bars = ax.bar(labels, values, color="#334155", width=0.62)
+    ax.set_ylim(0, max(values) * 1.15)
     ax.yaxis.set_major_formatter(FuncFormatter(_money_tick))
     ax.bar_label(
         bars,
@@ -87,38 +66,50 @@ def depreciation_chart() -> str:
     return _png_data_uri(fig)
 
 
-def price_mileage_chart() -> str:
-    mileages = [8_000, 18_000, 28_000, 38_000, 48_000, 55_000, 68_000, 78_000, 88_000, 42_000]
-    prices = comparable_prices(mileages)
+def price_mileage_chart(
+    mileage: int,
+    price: int,
+    listings: list[dict],
+) -> str:
+    comparable = [
+        (int(item["mileage"]), int(item["price"]))
+        for item in listings
+        if item.get("mileage") is not None and item.get("price") is not None
+    ]
+    mileages = [point[0] for point in comparable]
+    prices = [point[1] for point in comparable]
 
     fig, ax = plt.subplots(figsize=(5.56, 2.55), dpi=120)
+    if mileages:
+        ax.scatter(
+            mileages,
+            prices,
+            s=28,
+            color="#9ca3af",
+            label="Comparable listings",
+            zorder=3,
+        )
     ax.scatter(
-        mileages,
-        prices,
-        s=28,
-        color="#9ca3af",
-        label="Comparable listings",
-        zorder=3,
-    )
-    ax.scatter(
-        [SELECTED_MILEAGE],
-        [SELECTED_PRICE],
+        [mileage],
+        [price],
         s=42,
         color="#111827",
-        label="Selected BRZ",
+        label="Selected car",
         zorder=4,
     )
     ax.annotate(
-        "$24k · 33k mi",
-        (SELECTED_MILEAGE, SELECTED_PRICE),
+        f"${price / 1000:.0f}k · {mileage / 1000:.0f}k mi",
+        (mileage, price),
         textcoords="offset points",
         xytext=(8, 4),
         fontsize=8,
         color="#111827",
         fontweight="bold",
     )
-    ax.set_xlim(0, 100_000)
-    ax.set_ylim(12_000, 32_000)
+    xs = mileages + [mileage]
+    ys = prices + [price]
+    ax.set_xlim(0, max(xs) * 1.15)
+    ax.set_ylim(0, max(ys) * 1.2)
     ax.xaxis.set_major_formatter(FuncFormatter(_miles_tick))
     ax.yaxis.set_major_formatter(FuncFormatter(_money_tick))
     ax.legend(frameon=False, fontsize=8, labelcolor="#6b7280")
