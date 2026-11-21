@@ -148,6 +148,13 @@ body {
     height: auto;
 }
 
+.unavailable {
+    margin: 32px;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 600;
+}
+
 .similar {
     padding: 11px 15px;
     border: 1px solid #e5e7eb;

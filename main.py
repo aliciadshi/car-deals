@@ -1,3 +1,4 @@
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -39,15 +40,81 @@ async def browse(request: Request):
     )
 
 
+def format_money(value: int | float | None) -> str:
+    if value is None:
+        return "—"
+    return f"${int(value):,}"
+
+
+def format_miles(value: int | float | None) -> str:
+    if value is None:
+        return "—"
+    return f"{int(value):,} mi"
+
+
+def car_subtitle(car: dict) -> str:
+    if car.get("used") is True:
+        condition = "Used listing"
+    elif car.get("used") is False:
+        condition = "New listing"
+    else:
+        condition = "Listing"
+    parts = [condition]
+    if car.get("type"):
+        parts.append(str(car["type"]))
+    if car.get("location"):
+        parts.append(str(car["location"]))
+    return "  ·  ".join(parts)
+
+
 @app.get("/detail", response_class=HTMLResponse)
-async def detail(request: Request):
+async def detail(request: Request, vin: str | None = None):
+    car = None
+    similar: list[dict] = []
+    if vin:
+        try:
+            car = await get_car(vin)
+        except httpx.HTTPError:
+            car = None
+        if not car or not car.get("vin"):
+            car = None
+        elif car.get("similar_listings_url"):
+            try:
+                similar = await get_similar_listings(car["similar_listings_url"])
+            except httpx.HTTPError:
+                similar = []
+            similar = [item for item in similar if item.get("vin") != car["vin"]]
+
+    title = "Car"
+    depreciation = ""
+    price_mileage = ""
+    if car:
+        title = " ".join(
+            str(part)
+            for part in (car.get("year"), car.get("make"), car.get("model"))
+            if part
+        )
+        if car.get("msrp"):
+            depreciation = depreciation_chart(int(car["msrp"]))
+        if car.get("mileage") is not None and car.get("price") is not None:
+            price_mileage = price_mileage_chart(
+                int(car["mileage"]),
+                int(car["price"]),
+                similar,
+            )
+
     return templates.TemplateResponse(
         request=request,
         name="detail/detail.html",
         context={
-            "title": "2023 Subaru BRZ",
-            "depreciation_chart": depreciation_chart(),
-            "price_mileage_chart": price_mileage_chart(),
+            "title": title,
+            "car": car,
+            "similar": similar,
+            "subtitle": car_subtitle(car) if car else "",
+            "format_money": format_money,
+            "format_miles": format_miles,
+            "depreciation_chart": depreciation,
+            "price_mileage_chart": price_mileage,
         },
     )
 

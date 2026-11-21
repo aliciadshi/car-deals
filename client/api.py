@@ -12,26 +12,34 @@ BASE_URL = "https://api.auto.dev"
 API_KEY = os.getenv("API_KEY") or os.getenv("AUTO_DEV_API_KEY")
 
 
-def format_listing(listing: dict[str, Any]) -> dict[str, Any]:
-    """Convert an Auto.dev listing into the flat shape used by the app."""
-    vehicle = listing.get("vehicle") or {}
-    retail = listing.get("retailListing") or {}
-
+def _location(retail: dict[str, Any], listing: dict[str, Any]) -> str | None:
     city = retail.get("city")
     state = retail.get("state")
     if city and state:
-        location = f"{city}, {state}"
-    else:
-        location = city or state or listing.get("location")
+        return f"{city}, {state}"
+    return city or state or listing.get("location")
+
+
+def format_listing(listing: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert an Auto.dev listing into the flat shape used by the app.
+
+    A listing without a VIN is not for sale, so it is left out.
+    """
+    vehicle = listing.get("vehicle") or {}
+    retail = listing.get("retailListing") or {}
+    vin = listing.get("vin") or vehicle.get("vin")
+    if not vin:
+        return None
 
     return {
+        "vin": vin,
         "link": retail.get("vdp") or listing.get("@id"),
         "year": vehicle.get("year"),
         "make": vehicle.get("make"),
         "model": vehicle.get("model"),
         "mileage": retail.get("miles"),
         "price": retail.get("price"),
-        "location": location,
+        "location": _location(retail, listing),
     }
 
 
@@ -41,7 +49,7 @@ async def get_similar_listings(url: str) -> list[dict[str, Any]]:
         response = await client.get(url, headers=_headers())
         response.raise_for_status()
         results = response.json().get("data", [])
-        return [format_listing(listing) for listing in results]
+        return [item for item in map(format_listing, results) if item]
 
 
 def format_car_details(response: dict[str, Any]) -> dict[str, Any]:
@@ -63,6 +71,7 @@ def format_car_details(response: dict[str, Any]) -> dict[str, Any]:
         "year": vehicle.get("year"),
         "mileage": retail.get("miles"),
         "city": retail.get("city"),
+        "location": _location(retail, listing),
         "make": make,
         "price": retail.get("price"),
         "type": vehicle.get("type") or vehicle.get("bodyStyle"),
@@ -116,7 +125,7 @@ async def search_listings(
         response = await client.get("/listings", headers=_headers(), params=params)
         response.raise_for_status()
         results = response.json().get("data", [])
-        return [format_listing(listing) for listing in results]
+        return [item for item in map(format_listing, results) if item]
 
 
 async def get_car(car_id: str) -> dict[str, Any]:
